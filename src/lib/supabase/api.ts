@@ -66,8 +66,14 @@ export async function createProject(
         description: project.description,
         content: project.content,
         image_url: project.image_url,
+        secondary_image_url: project.secondary_image_url,
         demo_url: project.demo_url,
         github_url: project.github_url,
+        duration: project.duration,
+        completion_date: project.completion_date,
+        role: project.role,
+        client: project.client,
+        featured: project.featured || false,
       },
     ])
     .select()
@@ -110,8 +116,14 @@ export async function updateProject(
       description: project.description,
       content: project.content,
       image_url: project.image_url,
+      secondary_image_url: project.secondary_image_url,
       demo_url: project.demo_url,
       github_url: project.github_url,
+      duration: project.duration,
+      completion_date: project.completion_date,
+      role: project.role,
+      client: project.client,
+      featured: project.featured,
     })
     .eq("id", id);
 

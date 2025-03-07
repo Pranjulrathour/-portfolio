@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useAuth } from "@/lib/supabase/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -20,7 +19,6 @@ export default function SignUpForm() {
   const [fullName, setFullName] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { signUp } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -28,33 +26,25 @@ export default function SignUpForm() {
     setIsLoading(true);
     setError("");
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
-      setIsLoading(false);
-      return;
+    // Only allow the admin to sign up with specific credentials
+    if (
+      email === "pranjulrathour41@gmail.com" &&
+      fullName === "Pranjul Rathour" &&
+      password === "pranjul1234"
+    ) {
+      navigate("/login");
+    } else {
+      setError(
+        "Sign up is restricted. Only the portfolio owner can create an account.",
+      );
     }
 
-    try {
-      const result = await signUp(email, password, fullName);
-      console.log("Signup successful:", result);
-      navigate("/login");
-    } catch (error: any) {
-      console.error("Signup error:", error);
-      if (error.message.includes("User already registered")) {
-        setError(
-          "This email is already registered. Please use a different email or sign in.",
-        );
-      } else {
-        setError(error.message || "Error creating account");
-      }
-    } finally {
-      setIsLoading(false);
-    }
+    setIsLoading(false);
   };
 
   return (
     <AuthLayout>
-      <Card className="w-full">
+      <Card className="w-full border border-border/40 bg-muted/30">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
             <UserPlus className="h-5 w-5" /> Create an account
@@ -71,6 +61,7 @@ export default function SignUpForm() {
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-background/50"
               />
             </div>
             <div className="space-y-2">
@@ -83,6 +74,7 @@ export default function SignUpForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-background/50"
               />
             </div>
             <div className="space-y-2">
@@ -96,6 +88,7 @@ export default function SignUpForm() {
                 required
                 minLength={6}
                 disabled={isLoading}
+                className="bg-background/50"
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
@@ -105,10 +98,13 @@ export default function SignUpForm() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-slate-600">
-            Already have an account?{" "}
-            <Link to="/login" className="text-primary hover:underline">
-              Sign in
+          <div className="text-sm text-center text-muted-foreground">
+            <p>Sign up is restricted to portfolio owner only</p>
+            <Link
+              to="/login"
+              className="text-primary hover:underline block mt-2"
+            >
+              Back to Sign in
             </Link>
           </div>
         </CardFooter>

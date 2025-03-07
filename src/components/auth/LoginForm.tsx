@@ -28,11 +28,31 @@ export default function LoginForm() {
     setError("");
 
     try {
-      await signIn(email, password);
-      navigate("/");
-    } catch (error: any) {
+      // Hardcoded admin credentials check
+      if (
+        email === "pranjulrathour41@gmail.com" &&
+        password === "pranjul1234"
+      ) {
+        // Simulate successful login without actually calling Supabase
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            email: "pranjulrathour41@gmail.com",
+            user_metadata: { full_name: "Pranjul Rathour" },
+            is_admin: true,
+          }),
+        );
+
+        // Navigate to home page after successful login
+        setTimeout(() => {
+          navigate("/");
+        }, 500);
+      } else {
+        setError("Access denied. Only the portfolio owner can login.");
+      }
+    } catch (error) {
       console.error("Login error:", error);
-      setError(error.message || "Invalid email or password");
+      setError("An error occurred during login. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -40,7 +60,7 @@ export default function LoginForm() {
 
   return (
     <AuthLayout>
-      <Card className="w-full">
+      <Card className="w-full border border-border/40 bg-muted/30">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl text-center flex items-center justify-center gap-2">
             <LogIn className="h-5 w-5" /> Sign in
@@ -58,6 +78,7 @@ export default function LoginForm() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-background/50"
               />
             </div>
             <div className="space-y-2">
@@ -70,6 +91,7 @@ export default function LoginForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
+                className="bg-background/50"
               />
             </div>
             {error && <p className="text-sm text-red-500">{error}</p>}
@@ -79,11 +101,8 @@ export default function LoginForm() {
           </form>
         </CardContent>
         <CardFooter className="flex flex-col space-y-4">
-          <div className="text-sm text-center text-slate-600">
-            Don't have an account?{" "}
-            <Link to="/signup" className="text-primary hover:underline">
-              Sign up
-            </Link>
+          <div className="text-sm text-center text-muted-foreground">
+            <p>Only portfolio owner can sign in</p>
           </div>
         </CardFooter>
       </Card>

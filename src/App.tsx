@@ -6,6 +6,10 @@ import SignUpForm from "./components/auth/SignUpForm";
 import Dashboard from "./components/pages/dashboard";
 import Success from "./components/pages/success";
 import LandingPage from "./components/pages/portfolio/LandingPage";
+import AboutPage from "./components/pages/about";
+import ProjectsPage from "./components/pages/projects";
+import ContactPage from "./components/pages/contact";
+import ProjectDetailPage from "./components/pages/project-detail";
 import AdminPage from "./components/pages/admin";
 import { AuthProvider, useAuth } from "@/lib/supabase/auth";
 
@@ -24,12 +28,13 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AdminRoute({ children }: { children: React.ReactNode }) {
-  const { user, isAdmin, loading } = useAuth();
+  const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
     return <div>Loading...</div>;
   }
 
+  // Check if user exists and is admin
   if (!user || !isAdmin) {
     return <Navigate to="/login" />;
   }
@@ -60,9 +65,10 @@ function AppRoutes() {
             </AdminRoute>
           }
         />
-        <Route path="/projects/:slug" element={<LandingPage />} />
-        <Route path="/about" element={<LandingPage />} />
-        <Route path="/contact" element={<LandingPage />} />
+        <Route path="/projects" element={<ProjectsPage />} />
+        <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/success" element={<Success />} />
       </Routes>
       {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}

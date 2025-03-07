@@ -3,39 +3,46 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
 import ProjectForm from "./ProjectForm";
+import AddProjectForm from "./AddProjectForm";
 import ProjectList from "./ProjectList";
 import { Project } from "@/lib/supabase/api";
-import { useAuth } from "@/lib/supabase/auth";
 import { Navigate } from "react-router-dom";
 
 export default function AdminDashboard() {
-  const { user, isAdmin, loading } = useAuth();
+  // Check if user is logged in as admin
+  const storedUser = localStorage.getItem("user");
+  let isAdmin = false;
+
+  if (storedUser) {
+    try {
+      const user = JSON.parse(storedUser);
+      isAdmin = !!user.is_admin;
+    } catch (error) {
+      console.error("Error parsing user data:", error);
+    }
+  }
+
   const [activeTab, setActiveTab] = useState("projects");
   const [showForm, setShowForm] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | undefined>(
     undefined,
   );
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  if (loading) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        Loading...
-      </div>
-    );
-  }
-
-  if (!user || !isAdmin) {
+  if (!isAdmin) {
     return <Navigate to="/login" />;
   }
 
   const handleEditProject = (project: Project) => {
     setSelectedProject(project);
     setShowForm(true);
+    setShowAddForm(false);
   };
 
   const handleFormSuccess = () => {
     setShowForm(false);
+    setShowAddForm(false);
     setSelectedProject(undefined);
     setRefreshTrigger((prev) => prev + 1);
   };
@@ -44,8 +51,8 @@ export default function AdminDashboard() {
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        {activeTab === "projects" && !showForm && (
-          <Button onClick={() => setShowForm(true)}>
+        {activeTab === "projects" && !showForm && !showAddForm && (
+          <Button onClick={() => setShowAddForm(true)}>
             <PlusCircle className="mr-2 h-4 w-4" /> New Project
           </Button>
         )}
@@ -79,6 +86,21 @@ export default function AdminDashboard() {
                 onSuccess={handleFormSuccess}
               />
             </div>
+          ) : showAddForm ? (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Add New Project</h2>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddForm(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <AddProjectForm onSuccess={handleFormSuccess} />
+            </div>
           ) : (
             <ProjectList
               onEdit={handleEditProject}
@@ -95,8 +117,8 @@ export default function AdminDashboard() {
             </p>
             {/* Add settings form here */}
             <div className="text-sm text-gray-500">
-              <p>Email: {user.email}</p>
-              <p>Admin Status: {isAdmin ? "Administrator" : "User"}</p>
+              <p>Email: {JSON.parse(storedUser || "{}").email || "Admin"}</p>
+              <p>Admin Status: Administrator</p>
             </div>
           </div>
         </TabsContent>

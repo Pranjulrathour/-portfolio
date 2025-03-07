@@ -9,7 +9,7 @@ import { AuthProvider } from "@/lib/supabase/auth";
 export default function LandingPage() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <HeroSection />
         <ProjectsSection />
