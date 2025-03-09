@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
 import { PlusCircle } from "lucide-react";
@@ -6,21 +6,12 @@ import ProjectForm from "./ProjectForm";
 import AddProjectForm from "./AddProjectForm";
 import ProjectList from "./ProjectList";
 import { Project } from "@/lib/supabase/api";
-import { Navigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/lib/supabase/auth";
 
 export default function AdminDashboard() {
-  // Check if user is logged in as admin
-  const storedUser = localStorage.getItem("user");
-  let isAdmin = false;
-
-  if (storedUser) {
-    try {
-      const user = JSON.parse(storedUser);
-      isAdmin = !!user.is_admin;
-    } catch (error) {
-      console.error("Error parsing user data:", error);
-    }
-  }
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
 
   const [activeTab, setActiveTab] = useState("projects");
   const [showForm, setShowForm] = useState(false);
@@ -30,9 +21,12 @@ export default function AdminDashboard() {
   );
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  if (!isAdmin) {
-    return <Navigate to="/login" />;
-  }
+  useEffect(() => {
+    // If not admin, redirect to login
+    if (!isAdmin) {
+      navigate("/login");
+    }
+  }, [isAdmin, navigate]);
 
   const handleEditProject = (project: Project) => {
     setSelectedProject(project);
@@ -117,7 +111,7 @@ export default function AdminDashboard() {
             </p>
             {/* Add settings form here */}
             <div className="text-sm text-gray-500">
-              <p>Email: {JSON.parse(storedUser || "{}").email || "Admin"}</p>
+              <p>Email: {user?.email || "Admin"}</p>
               <p>Admin Status: Administrator</p>
             </div>
           </div>

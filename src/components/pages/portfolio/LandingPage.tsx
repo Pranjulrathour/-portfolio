@@ -5,18 +5,21 @@ import AboutSection from "../../portfolio/AboutSection";
 import ContactSection from "../../portfolio/ContactSection";
 import Footer from "../../portfolio/Footer";
 import { AuthProvider } from "@/lib/supabase/auth";
+import BackgroundWrapper from "@/components/ui/background-wrapper";
 
 export default function LandingPage() {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-background">
-        <Navbar />
-        <HeroSection />
-        <ProjectsSection />
-        <AboutSection />
-        <ContactSection />
-        <Footer />
-      </div>
+      <BackgroundWrapper>
+        <div className="min-h-screen bg-background bg-opacity-70">
+          <Navbar />
+          <HeroSection />
+          <ProjectsSection />
+          <AboutSection />
+          <ContactSection />
+          <Footer />
+        </div>
+      </BackgroundWrapper>
     </AuthProvider>
   );
 }

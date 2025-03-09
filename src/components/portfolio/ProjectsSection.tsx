@@ -5,104 +5,66 @@ import { ExternalLink, Github, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-
-interface Project {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  technologies: string[];
-  demoUrl?: string;
-  githubUrl?: string;
-  slug: string;
-  featured?: boolean;
-}
+import { getProjects, Project } from "@/lib/supabase/api";
+import { FlipCard } from "@/components/ui/flip-card";
 
 interface ProjectsSectionProps {
   projects?: Project[];
 }
 
-const defaultProjects: Project[] = [
+// Fallback projects in case API fails
+const fallbackProjects: Project[] = [
   {
     id: "1",
     title: "E-commerce Platform",
     description:
       "A modern e-commerce platform with cart functionality and payment integration.",
-    image:
+    image_url:
       "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80",
     technologies: ["React", "Node.js", "MongoDB", "Stripe"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
+    demo_url: "https://example.com",
+    github_url: "https://github.com",
     slug: "ecommerce-platform",
     featured: true,
+    content: null,
+    secondary_image_url: null,
+    duration: "3 months",
+    completion_date: "June 2023",
+    role: "Lead Developer",
+    client: "RetailCo Inc.",
+    created_at: null,
+    updated_at: null,
   },
   {
     id: "2",
     title: "Portfolio Website",
     description:
       "A minimalist portfolio website with smooth animations and responsive design.",
-    image:
+    image_url:
       "https://images.unsplash.com/photo-1517180102446-f3ece451e9d8?w=800&q=80",
     technologies: ["React", "Tailwind CSS", "Framer Motion"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
+    demo_url: "https://example.com",
+    github_url: "https://github.com",
     slug: "portfolio-website",
     featured: true,
-  },
-  {
-    id: "3",
-    title: "Task Management App",
-    description:
-      "A productivity app for managing tasks and projects with team collaboration features.",
-    image:
-      "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
-    technologies: ["React", "Firebase", "Tailwind CSS"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    slug: "task-management-app",
-  },
-  {
-    id: "4",
-    title: "Music Streaming Service",
-    description:
-      "A Spotify-inspired music streaming platform with personalized recommendations.",
-    image:
-      "https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=800&q=80",
-    technologies: ["React", "Node.js", "PostgreSQL", "Redis"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    slug: "music-streaming-service",
-  },
-  {
-    id: "5",
-    title: "AI Content Generator",
-    description:
-      "An AI-powered tool that generates marketing copy, blog posts, and social media content.",
-    image:
-      "https://images.unsplash.com/photo-1677442135968-6144fc1c8ffb?w=800&q=80",
-    technologies: ["Next.js", "OpenAI API", "Tailwind CSS"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    slug: "ai-content-generator",
-  },
-  {
-    id: "6",
-    title: "Real-time Chat Application",
-    description:
-      "A real-time messaging platform with channels, direct messages, and file sharing.",
-    image:
-      "https://images.unsplash.com/photo-1611746872915-64382b5c2a98?w=800&q=80",
-    technologies: ["React", "Socket.io", "Express", "MongoDB"],
-    demoUrl: "https://example.com",
-    githubUrl: "https://github.com",
-    slug: "real-time-chat-application",
+    content: null,
+    secondary_image_url: null,
+    duration: "1 month",
+    completion_date: "May 2023",
+    role: "Frontend Developer",
+    client: "Personal Project",
+    created_at: null,
+    updated_at: null,
   },
 ];
 
 export default function ProjectsSection({
-  projects = defaultProjects,
+  projects: initialProjects,
 }: ProjectsSectionProps) {
   const [isAdmin, setIsAdmin] = useState(false);
+  const [projects, setProjects] = useState<Project[]>(initialProjects || []);
+  const [loading, setLoading] = useState(!initialProjects);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Check if user is logged in as admin
@@ -117,6 +79,35 @@ export default function ProjectsSection({
     }
   }, []);
 
+  useEffect(() => {
+    // If projects were not passed as props, fetch them
+    if (!initialProjects) {
+      const fetchProjects = async () => {
+        try {
+          setLoading(true);
+          const data = await getProjects();
+          if (data && data.length > 0) {
+            setProjects(data);
+          } else {
+            // Use fallback projects if API returns empty
+            setProjects(fallbackProjects);
+            setError(
+              "Could not load projects from database, showing sample projects",
+            );
+          }
+        } catch (err) {
+          console.error("Error fetching projects:", err);
+          setProjects(fallbackProjects);
+          setError("Failed to load projects, showing sample projects");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchProjects();
+    }
+  }, [initialProjects]);
+
   // For the main page, only show featured projects or the first 3
   const displayedProjects =
     window.location.pathname === "/"
@@ -124,6 +115,17 @@ export default function ProjectsSection({
         ? projects.filter((p) => p.featured)
         : projects.slice(0, 3)
       : projects;
+
+  if (loading) {
+    return (
+      <section id="projects" className="py-20 bg-background">
+        <div className="container mx-auto px-4 text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading projects...</p>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="projects" className="py-20 bg-background">
@@ -139,101 +141,162 @@ export default function ProjectsSection({
             specific problems.
           </p>
 
+          {error && <p className="text-amber-500 mt-2 text-sm">{error}</p>}
+
           {isAdmin && (
             <div className="mt-4">
-              <Button variant="outline" className="mt-2">
-                <Link to="/admin">Manage Projects</Link>
+              <Button
+                variant="outline"
+                className="mt-2"
+                onClick={() => {
+                  // Force navigation to admin page
+                  window.location.href = "/admin";
+                }}
+              >
+                Manage Projects
               </Button>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedProjects.map((project, index) => (
-            <motion.div
-              key={project.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-              viewport={{ once: true }}
-            >
-              <Link to={`/projects/${project.slug}`} className="block h-full">
-                <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 bg-muted/30 border border-border/40 group">
-                  <div className="aspect-video overflow-hidden relative">
-                    <img
-                      src={project.image}
-                      alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
-                    {project.featured && (
-                      <div className="absolute top-3 right-3">
-                        <Badge className="bg-primary/90 hover:bg-primary text-white">
-                          Featured
-                        </Badge>
+        {displayedProjects.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-muted-foreground">
+              No projects found. Check back soon!
+            </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {displayedProjects.map((project, index) => (
+              <motion.div
+                key={project.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="h-[400px]"
+              >
+                <FlipCard
+                  frontContent={
+                    <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 bg-muted/30 border border-border/40 group">
+                      <div className="aspect-video overflow-hidden relative">
+                        <img
+                          src={
+                            project.image_url ||
+                            "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"
+                          }
+                          alt={project.title}
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                        {project.featured && (
+                          <div className="absolute top-3 right-3">
+                            <Badge className="bg-primary/90 hover:bg-primary text-white">
+                              Featured
+                            </Badge>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
-                      {project.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-4">
-                      {project.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.technologies.map((tech) => (
-                        <Badge
-                          key={tech}
-                          variant="secondary"
-                          className="bg-background/50"
-                        >
-                          {tech}
-                        </Badge>
-                      ))}
-                    </div>
-                  </CardContent>
-                  <CardFooter className="px-6 pb-6 pt-0 flex justify-between">
-                    <div className="flex gap-4">
-                      {project.demoUrl && (
-                        <a
-                          href={project.demoUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 group/link"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <ExternalLink
-                            size={16}
-                            className="transition-transform group-hover/link:scale-110"
-                          />
-                          <span>Live Demo</span>
-                        </a>
-                      )}
-                      {project.githubUrl && (
-                        <a
-                          href={project.githubUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 group/link"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Github
-                            size={16}
-                            className="transition-transform group-hover/link:scale-110"
-                          />
-                          <span>Source</span>
-                        </a>
-                      )}
-                    </div>
-                    <div className="text-primary opacity-0 group-hover:opacity-100 transition-opacity">
-                      <ArrowUpRight size={16} />
-                    </div>
-                  </CardFooter>
-                </Card>
-              </Link>
-            </motion.div>
-          ))}
-        </div>
+                      <CardContent className="p-6">
+                        <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
+                          {project.title}
+                        </h3>
+                        <p className="text-muted-foreground mb-4 line-clamp-2">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {project.technologies.slice(0, 3).map((tech) => (
+                            <Badge
+                              key={tech}
+                              variant="secondary"
+                              className="bg-background/50"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                          {project.technologies.length > 3 && (
+                            <Badge
+                              variant="secondary"
+                              className="bg-background/50"
+                            >
+                              +{project.technologies.length - 3}
+                            </Badge>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  }
+                  backContent={
+                    <Card className="overflow-hidden h-full hover:shadow-lg transition-all duration-300 bg-muted/30 border border-border/40 group p-6 flex flex-col justify-between">
+                      <div>
+                        <h3 className="text-xl font-semibold mb-4 text-primary">
+                          {project.title}
+                        </h3>
+                        <p className="text-muted-foreground mb-4">
+                          {project.description}
+                        </p>
+                        <div className="flex flex-wrap gap-2 mb-4">
+                          {project.technologies.map((tech) => (
+                            <Badge
+                              key={tech}
+                              variant="secondary"
+                              className="bg-background/50"
+                            >
+                              {tech}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="mt-auto">
+                        <div className="flex gap-4 justify-between items-center">
+                          <div className="flex gap-2">
+                            {project.demo_url && (
+                              <a
+                                href={project.demo_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 group/link"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <ExternalLink
+                                  size={16}
+                                  className="transition-transform group-hover/link:scale-110"
+                                />
+                                <span>Live Demo</span>
+                              </a>
+                            )}
+                            {project.github_url && (
+                              <a
+                                href={project.github_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 group/link"
+                                onClick={(e) => e.stopPropagation()}
+                              >
+                                <Github
+                                  size={16}
+                                  className="transition-transform group-hover/link:scale-110"
+                                />
+                                <span>Source</span>
+                              </a>
+                            )}
+                          </div>
+                          <Link
+                            to={`/projects/${project.slug}`}
+                            className="text-primary flex items-center gap-1 hover:underline"
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            View Details
+                            <ArrowUpRight size={16} />
+                          </Link>
+                        </div>
+                      </div>
+                    </Card>
+                  }
+                />
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {window.location.pathname === "/" && projects.length > 3 && (
           <div className="mt-12 text-center">

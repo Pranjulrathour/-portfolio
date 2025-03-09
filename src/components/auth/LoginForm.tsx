@@ -43,9 +43,9 @@ export default function LoginForm() {
           }),
         );
 
-        // Navigate to home page after successful login
+        // Navigate directly to admin dashboard after successful login
         setTimeout(() => {
-          navigate("/");
+          navigate("/admin");
         }, 500);
       } else {
         setError("Access denied. Only the portfolio owner can login.");
