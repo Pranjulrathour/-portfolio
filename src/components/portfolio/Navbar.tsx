@@ -76,7 +76,7 @@ export default function Navbar() {
       <div className="container mx-auto px-4 flex justify-between items-center">
         <Link to="/" className="flex items-center">
           <img
-            src="https://raw.githubusercontent.com/Pranjulrathour/photo/refs/heads/main/Untitled%20design.png"
+            src="https://raw.githubusercontent.com/Pranjulrathour/-portfolio/refs/heads/main/public/Red%20%26%20White%20Corporate%20Application%20Letter%20(YouTube%20Thumbnail).png"
             alt="Pranjul Rathour Logo"
             className="h-10"
           />

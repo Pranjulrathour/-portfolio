@@ -39,7 +39,7 @@ export default function HeroSection() {
             </h1>
             <div className="flex flex-col space-y-4 mb-6">
               <div className="text-4xl md:text-5xl lg:text-6xl font-bold">
-                CREATIVE AND GENIUS
+               YOUR CREATIVE AND GENIUS
               </div>
               <div className="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block max-w-max">
                 <motion.div
@@ -52,7 +52,9 @@ export default function HeroSection() {
                       "CREATOR!",
                       "DESIGNER!",
                       "DEVELOPER!",
+                      "HOST!",
                       "INNOVATOR!",
+                      "SPEAKER!",
                       "MAKER!",
                       "MASTERMIND!",
                       "SOLVER!",

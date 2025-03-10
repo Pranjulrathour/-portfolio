@@ -48,7 +48,7 @@ export default function LoginForm() {
           navigate("/admin");
         }, 500);
       } else {
-        setError("Access denied. Only the portfolio owner can login.");
+        setError("WHY ARE YOU EVEN TRYING BABY 👀, YOU ARE NOT ALLOWED TO DO THIS.");
       }
     } catch (error) {
       console.error("Login error:", error);

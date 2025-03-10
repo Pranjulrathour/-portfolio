@@ -13,9 +13,11 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
         <div className="max-w-md w-full px-4">
           <div className="text-center mb-8">
             <Link to="/" className="inline-block">
-              <h1 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">
-                Pranjul Rathour
-              </h1>
+              <img 
+                src="https://raw.githubusercontent.com/Pranjulrathour/-portfolio/refs/heads/main/public/Red%20%26%20White%20Corporate%20Application%20Letter%20(YouTube%20Thumbnail).png" 
+                alt="Portfolio Logo" 
+                className="mx-auto w-40 h-auto"
+              />
             </Link>
             <p className="text-muted-foreground mt-2">Portfolio Admin Access</p>
           </div>

@@ -35,7 +35,7 @@ export default function SignUpForm() {
       navigate("/login");
     } else {
       setError(
-        "Sign up is restricted. Only the portfolio owner can create an account.",
+        "WHY ARE YOU EVEN TRYING BABY 👀, YOU ARE NOT ALLOWED TO DO THIS.",
       );
     }
 
