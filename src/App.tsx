@@ -8,8 +8,10 @@ import Success from "./components/pages/success";
 import LandingPage from "./components/pages/portfolio/LandingPage";
 import AboutPage from "./components/pages/about";
 import ProjectsPage from "./components/pages/projects";
+import AchievementsPage from "./components/pages/achievements";
 import ContactPage from "./components/pages/contact";
 import ProjectDetailPage from "./components/pages/project-detail";
+import AchievementDetailPage from "./components/pages/achievement-detail";
 import AdminPage from "./components/pages/admin";
 import { AuthProvider, useAuth } from "@/lib/supabase/auth";
 
@@ -67,6 +69,8 @@ function AppRoutes() {
         />
         <Route path="/projects" element={<ProjectsPage />} />
         <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+        <Route path="/achievements" element={<AchievementsPage />} />
+        <Route path="/achievements/:id" element={<AchievementDetailPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/success" element={<Success />} />

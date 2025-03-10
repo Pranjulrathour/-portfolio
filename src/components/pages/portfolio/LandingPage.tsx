@@ -1,6 +1,7 @@
 import Navbar from "../../portfolio/Navbar";
 import HeroSection from "../../portfolio/HeroSection";
 import ProjectsSection from "../../portfolio/ProjectsSection";
+import AchievementsSection from "../../portfolio/AchievementsSection";
 import AboutSection from "../../portfolio/AboutSection";
 import ContactSection from "../../portfolio/ContactSection";
 import Footer from "../../portfolio/Footer";
@@ -15,6 +16,7 @@ export default function LandingPage() {
           <Navbar />
           <HeroSection />
           <ProjectsSection />
+          <AchievementsSection />
           <AboutSection />
           <ContactSection />
           <Footer />

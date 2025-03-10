@@ -5,7 +5,10 @@ import { PlusCircle } from "lucide-react";
 import ProjectForm from "./ProjectForm";
 import AddProjectForm from "./AddProjectForm";
 import ProjectList from "./ProjectList";
-import { Project } from "@/lib/supabase/api";
+import AchievementForm from "./AchievementForm";
+import AddAchievementForm from "./AddAchievementForm";
+import AchievementList from "./AchievementList";
+import { Project, Achievement } from "@/lib/supabase/api";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/lib/supabase/auth";
 
@@ -19,6 +22,9 @@ export default function AdminDashboard() {
   const [selectedProject, setSelectedProject] = useState<Project | undefined>(
     undefined,
   );
+  const [selectedAchievement, setSelectedAchievement] = useState<
+    Achievement | undefined
+  >(undefined);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   useEffect(() => {
@@ -30,6 +36,14 @@ export default function AdminDashboard() {
 
   const handleEditProject = (project: Project) => {
     setSelectedProject(project);
+    setSelectedAchievement(undefined);
+    setShowForm(true);
+    setShowAddForm(false);
+  };
+
+  const handleEditAchievement = (achievement: Achievement) => {
+    setSelectedAchievement(achievement);
+    setSelectedProject(undefined);
     setShowForm(true);
     setShowAddForm(false);
   };
@@ -38,23 +52,43 @@ export default function AdminDashboard() {
     setShowForm(false);
     setShowAddForm(false);
     setSelectedProject(undefined);
+    setSelectedAchievement(undefined);
     setRefreshTrigger((prev) => prev + 1);
+  };
+
+  const renderAddButton = () => {
+    if (showForm || showAddForm) return null;
+
+    if (activeTab === "projects") {
+      return (
+        <Button onClick={() => setShowAddForm(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" /> New Project
+        </Button>
+      );
+    }
+
+    if (activeTab === "achievements") {
+      return (
+        <Button onClick={() => setShowAddForm(true)}>
+          <PlusCircle className="mr-2 h-4 w-4" /> New Achievement
+        </Button>
+      );
+    }
+
+    return null;
   };
 
   return (
     <div className="container mx-auto py-8 px-4">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-        {activeTab === "projects" && !showForm && !showAddForm && (
-          <Button onClick={() => setShowAddForm(true)}>
-            <PlusCircle className="mr-2 h-4 w-4" /> New Project
-          </Button>
-        )}
+        {renderAddButton()}
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="mb-8">
           <TabsTrigger value="projects">Projects</TabsTrigger>
+          <TabsTrigger value="achievements">Elite Achievements</TabsTrigger>
           <TabsTrigger value="settings">Settings</TabsTrigger>
         </TabsList>
 
@@ -98,6 +132,51 @@ export default function AdminDashboard() {
           ) : (
             <ProjectList
               onEdit={handleEditProject}
+              refreshTrigger={refreshTrigger}
+            />
+          )}
+        </TabsContent>
+
+        <TabsContent value="achievements">
+          {showForm ? (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">
+                  {selectedAchievement ? "Edit Achievement" : "New Achievement"}
+                </h2>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowForm(false);
+                    setSelectedAchievement(undefined);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <AchievementForm
+                achievement={selectedAchievement}
+                onSuccess={handleFormSuccess}
+              />
+            </div>
+          ) : showAddForm ? (
+            <div>
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-semibold">Add New Achievement</h2>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowAddForm(false);
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <AddAchievementForm onSuccess={handleFormSuccess} />
+            </div>
+          ) : (
+            <AchievementList
+              onEdit={handleEditAchievement}
               refreshTrigger={refreshTrigger}
             />
           )}

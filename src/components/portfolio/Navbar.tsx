@@ -55,6 +55,11 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/", icon: <Sparkles className="h-4 w-4" /> },
     { name: "Projects", href: "/projects", icon: <Code className="h-4 w-4" /> },
+    {
+      name: "Achievements",
+      href: "/achievements",
+      icon: <Code className="h-4 w-4" />,
+    },
     { name: "About", href: "/about", icon: <UserIcon className="h-4 w-4" /> },
     { name: "Contact", href: "/contact", icon: <Send className="h-4 w-4" /> },
   ];
@@ -69,11 +74,12 @@ export default function Navbar() {
       )}
     >
       <div className="container mx-auto px-4 flex justify-between items-center">
-        <Link
-          to="/"
-          className="text-2xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
-        >
-          Pranjul Rathour
+        <Link to="/" className="flex items-center">
+          <img
+            src="https://raw.githubusercontent.com/Pranjulrathour/photo/refs/heads/main/Untitled%20design.png"
+            alt="Pranjul Rathour Logo"
+            className="h-10"
+          />
         </Link>
 
         {/* Desktop Navigation */}

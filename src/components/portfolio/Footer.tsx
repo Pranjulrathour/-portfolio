@@ -46,11 +46,12 @@ export default function Footer() {
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>
-            <Link
-              to="/"
-              className="text-2xl font-bold tracking-tight mb-4 inline-block bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500"
-            >
-              Pranjul Rathour
+            <Link to="/" className="mb-4 inline-block">
+              <img
+                src="https://raw.githubusercontent.com/Pranjulrathour/photo/refs/heads/main/Untitled%20design.png"
+                alt="Pranjul Rathour Logo"
+                className="h-12"
+              />
             </Link>
             <p className="text-muted-foreground mt-2 max-w-xs">
               Creating beautiful, functional websites and applications with a

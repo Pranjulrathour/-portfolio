@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import React from "react";
 import GradientBackground from "@/components/ui/gradient-background";
+import SplitRotatingText from "@/components/ui/split-rotating-text";
 
 export default function HeroSection() {
   const scrollToProjects = () => {
@@ -36,10 +37,37 @@ export default function HeroSection() {
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
               I'm <span className="text-blue-600">Pranjul Rathour,</span>
             </h1>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-6">
-              Web Designer &<br />
-              Developer Enthusiast
-            </h2>
+            <div className="flex flex-col space-y-4 mb-6">
+              <div className="text-4xl md:text-5xl lg:text-6xl font-bold">
+                CREATIVE AND GENIUS
+              </div>
+              <div className="bg-blue-600 text-white px-6 py-3 rounded-lg inline-block max-w-max">
+                <motion.div
+                  className="text-3xl md:text-4xl lg:text-5xl font-bold"
+                  key="rotating-text"
+                >
+                  <SplitRotatingText
+                    staticText=""
+                    rotatingTexts={[
+                      "CREATOR!",
+                      "DESIGNER!",
+                      "DEVELOPER!",
+                      "INNOVATOR!",
+                      "MAKER!",
+                      "MASTERMIND!",
+                      "SOLVER!",
+                    ]}
+                    rotationInterval={2000}
+                    staggerDuration={0.03}
+                    transition={{ type: "spring", damping: 30, stiffness: 200 }}
+                    mainClassName=""
+                    staticClassName="hidden"
+                    rotatingClassName="bg-transparent"
+                    elementLevelClassName="font-bold"
+                  />
+                </motion.div>
+              </div>
+            </div>
 
             <p className="text-lg text-muted-foreground mb-8 max-w-lg">
               Innovative Digital Marketer with Expertise in Driving Online

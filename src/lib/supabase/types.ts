@@ -117,6 +117,38 @@ export interface Database {
           created_at?: string | null;
         };
       };
+      achievements: {
+        Row: {
+          id: string;
+          place: string;
+          product: string;
+          description: string;
+          image_url: string | null;
+          secondary_image_url: string | null;
+          created_at: string | null;
+          updated_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          place: string;
+          product: string;
+          description: string;
+          image_url?: string | null;
+          secondary_image_url?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          place?: string;
+          product?: string;
+          description?: string;
+          image_url?: string | null;
+          secondary_image_url?: string | null;
+          created_at?: string | null;
+          updated_at?: string | null;
+        };
+      };
     };
   };
 }

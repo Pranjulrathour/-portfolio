@@ -4,7 +4,7 @@ const Squares = ({
   direction = "right",
   speed = 1,
   borderColor = "#999",
-  squareSize = 40,
+  squareSize = 80,
   hoverFillColor = "#222",
 }) => {
   const canvasRef = useRef(null);
@@ -57,19 +57,7 @@ const Squares = ({
         }
       }
 
-      const gradient = ctx.createRadialGradient(
-        canvas.width / 2,
-        canvas.height / 2,
-        0,
-        canvas.width / 2,
-        canvas.height / 2,
-        Math.sqrt(canvas.width ** 2 + canvas.height ** 2) / 2,
-      );
-      gradient.addColorStop(0, "rgba(0, 0, 0, 0)");
-      gradient.addColorStop(1, "#060606");
-
-      ctx.fillStyle = gradient;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      // Remove the gradient overlay to make squares more visible
     };
 
     const updateAnimation = () => {

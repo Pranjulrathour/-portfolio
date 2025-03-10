@@ -9,7 +9,125 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string | null
+          description: string
+          id: string
+          image_url: string | null
+          place: string
+          product: string
+          secondary_image_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description: string
+          id?: string
+          image_url?: string | null
+          place: string
+          product: string
+          secondary_image_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string
+          id?: string
+          image_url?: string | null
+          place?: string
+          product?: string
+          secondary_image_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      project_technologies: {
+        Row: {
+          created_at: string | null
+          id: string
+          project_id: string
+          technology: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          project_id: string
+          technology: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          project_id?: string
+          technology?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_technologies_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          client: string | null
+          completion_date: string | null
+          content: string | null
+          created_at: string | null
+          demo_url: string | null
+          description: string
+          duration: string | null
+          featured: boolean | null
+          github_url: string | null
+          id: string
+          image_url: string | null
+          role: string | null
+          secondary_image_url: string | null
+          slug: string
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          client?: string | null
+          completion_date?: string | null
+          content?: string | null
+          created_at?: string | null
+          demo_url?: string | null
+          description: string
+          duration?: string | null
+          featured?: boolean | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          role?: string | null
+          secondary_image_url?: string | null
+          slug: string
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          client?: string | null
+          completion_date?: string | null
+          content?: string | null
+          created_at?: string | null
+          demo_url?: string | null
+          description?: string
+          duration?: string | null
+          featured?: boolean | null
+          github_url?: string | null
+          id?: string
+          image_url?: string | null
+          role?: string | null
+          secondary_image_url?: string | null
+          slug?: string
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

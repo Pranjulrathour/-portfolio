@@ -2,6 +2,7 @@ import { supabase } from "./client";
 import { Tables, InsertTables, UpdateTables } from "./types";
 
 export type Project = Tables<"projects"> & { technologies: string[] };
+export type Achievement = Tables<"achievements">;
 
 // Projects API
 export async function getProjects(): Promise<Project[]> {
@@ -191,6 +192,110 @@ export async function deleteProject(id: string): Promise<boolean> {
     return true;
   } catch (error) {
     console.error("Error in deleteProject:", error);
+    return false;
+  }
+}
+
+// Achievements API
+export async function getAchievements(): Promise<Achievement[]> {
+  try {
+    const { data, error } = await supabase
+      .from("achievements")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Error fetching achievements:", error);
+      return [];
+    }
+
+    return data || [];
+  } catch (error) {
+    console.error("Error in getAchievements:", error);
+    return [];
+  }
+}
+
+export async function getAchievementById(
+  id: string,
+): Promise<Achievement | null> {
+  try {
+    const { data, error } = await supabase
+      .from("achievements")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      console.error("Error fetching achievement:", error);
+      return null;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error in getAchievementById:", error);
+    return null;
+  }
+}
+
+export async function createAchievement(
+  achievement: InsertTables<"achievements">,
+): Promise<Achievement | null> {
+  try {
+    console.log("Creating achievement with data:", achievement);
+    const { data, error } = await supabase
+      .from("achievements")
+      .insert([achievement])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Error creating achievement:", error);
+      return null;
+    }
+
+    console.log("Achievement created successfully:", data);
+    return data;
+  } catch (error) {
+    console.error("Error in createAchievement:", error);
+    return null;
+  }
+}
+
+export async function updateAchievement(
+  id: string,
+  achievement: UpdateTables<"achievements">,
+): Promise<boolean> {
+  try {
+    const { error } = await supabase
+      .from("achievements")
+      .update(achievement)
+      .eq("id", id);
+
+    if (error) {
+      console.error("Error updating achievement:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in updateAchievement:", error);
+    return false;
+  }
+}
+
+export async function deleteAchievement(id: string): Promise<boolean> {
+  try {
+    const { error } = await supabase.from("achievements").delete().eq("id", id);
+
+    if (error) {
+      console.error("Error deleting achievement:", error);
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error in deleteAchievement:", error);
     return false;
   }
 }

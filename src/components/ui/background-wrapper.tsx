@@ -18,11 +18,11 @@ const BackgroundWrapper: React.FC<BackgroundWrapperProps> = ({ children }) => {
   return (
     <div className="relative min-h-screen w-full overflow-hidden">
       {/* Background animation */}
-      <div className="fixed inset-0 z-0 opacity-30">
+      <div className="fixed inset-0 z-0 opacity-20">
         <Squares
           direction="diagonal"
           speed={0.5}
-          squareSize={60}
+          squareSize={80}
           borderColor={borderColor}
           hoverFillColor={hoverFillColor}
         />
