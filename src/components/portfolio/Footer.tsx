@@ -1,38 +1,10 @@
 import { Link } from "react-router-dom";
-import {
-  Github,
-  Twitter,
-  Linkedin,
-  Instagram,
-  ArrowUpRight,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SocialIcons from "@/components/ui/SocialIcons";
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
-
-  const socialLinks = [
-    {
-      icon: <Github className="h-5 w-5" />,
-      href: "https://github.com",
-      label: "GitHub",
-    },
-    {
-      icon: <Twitter className="h-5 w-5" />,
-      href: "https://twitter.com",
-      label: "Twitter",
-    },
-    {
-      icon: <Linkedin className="h-5 w-5" />,
-      href: "https://linkedin.com",
-      label: "LinkedIn",
-    },
-    {
-      icon: <Instagram className="h-5 w-5" />,
-      href: "https://instagram.com",
-      label: "Instagram",
-    },
-  ];
 
   const navLinks = [
     { name: "Home", href: "/" },
@@ -77,26 +49,14 @@ export default function Footer() {
 
           <div>
             <h3 className="text-lg font-semibold mb-4">Connect</h3>
-            <div className="flex flex-col space-y-3 mb-4">
-              {socialLinks.map((link, index) => (
-                <a
-                  key={index}
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-muted-foreground hover:text-foreground transition-colors flex items-center group"
-                >
-                  {link.icon}
-                  <span className="ml-2">{link.label}</span>
-                  <ArrowUpRight className="ml-1 h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+            <SocialIcons />
+            <div className="mt-4">
+              <Button variant="outline" className="mt-2" asChild>
+                <a href="mailto:pranjulrathour41@gmail.com">
+                  pranjulrathour41@gmail.com
                 </a>
-              ))}
+              </Button>
             </div>
-            <Button variant="outline" className="mt-2" asChild>
-              <a href="mailto:pranjulrathour41@gmail.com">
-                pranjulrathour41@gmail.com
-              </a>
-            </Button>
           </div>
         </div>
 

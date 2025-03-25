@@ -1,12 +1,10 @@
-import { motion } from "framer-motion";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 import { getAchievements, Achievement } from "@/lib/supabase/api";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
-// Removed TiltedCard import as we're using a simpler card design
+import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import { IconAward } from "@tabler/icons-react";
 
 interface AchievementsSectionProps {
   achievements?: Achievement[];
@@ -41,6 +39,19 @@ const fallbackAchievements: Achievement[] = [
   },
 ];
 
+// Simple Image Header component
+function ImageHeader({ imageUrl }: { imageUrl: string }) {
+  return (
+    <div className="w-full h-full overflow-hidden">
+      <img 
+        src={imageUrl || "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"} 
+        alt="Achievement" 
+        className="w-full h-full object-cover transition-all duration-500 group-hover/bento:scale-110" 
+      />
+    </div>
+  );
+}
+
 export default function AchievementsSection({
   achievements: initialAchievements,
 }: AchievementsSectionProps) {
@@ -49,7 +60,6 @@ export default function AchievementsSection({
   );
   const [loading, setLoading] = useState(!initialAchievements);
   const [error, setError] = useState<string | null>(null);
-  // No longer need selectedAchievement state as we're using dedicated pages
 
   useEffect(() => {
     // If achievements were not passed as props, fetch them
@@ -80,9 +90,16 @@ export default function AchievementsSection({
     }
   }, [initialAchievements]);
 
-  // For the main page, only show the first 3 achievements
+  // For the main page, only show the first 4 achievements
   const displayedAchievements =
-    window.location.pathname === "/" ? achievements.slice(0, 3) : achievements;
+    window.location.pathname === "/" ? achievements.slice(0, 4) : achievements;
+
+  // Get grid span class based on index
+  const getSpanClass = (index: number) => {
+    if (index % 5 === 0) return "md:col-span-2 md:row-span-2"; // Feature item
+    if (index % 3 === 0) return "md:col-span-2"; // Wider item
+    return ""; // Default size
+  };
 
   if (loading) {
     return (
@@ -117,53 +134,42 @@ export default function AchievementsSection({
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {displayedAchievements.map((achievement, index) => (
-              <motion.div
-                key={achievement.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-                className="h-full"
-              >
-                <div className="h-full rounded-xl overflow-hidden bg-purple-600 hover:shadow-lg transition-all duration-300">
-                  <div className="relative aspect-video">
-                    <img
-                      src={
-                        achievement.image_url ||
-                        "https://images.unsplash.com/photo-1557821552-17105176677c?w=800&q=80"
-                      }
-                      alt={`${achievement.place} - ${achievement.product}`}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute top-4 left-4 font-bold text-xl">
-                      {achievement.place}
-                    </div>
-                    <div className="absolute top-4 right-4 font-bold text-xl">
-                      {achievement.product}
-                    </div>
+          <div className="max-w-6xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:auto-rows-[15rem] auto-rows-[20rem]">
+              {displayedAchievements.map((achievement, index) => (
+                <div 
+                  key={achievement.id}
+                  className={`row-span-1 rounded-xl group hover:shadow-xl transition duration-300 shadow-input dark:shadow-none p-0 dark:bg-black dark:border-white/[0.2] bg-white border border-neutral-200 relative overflow-hidden cursor-pointer ${getSpanClass(index)}`}
+                >
+                  <div className="relative z-10 w-full h-full">
+                    <ImageHeader imageUrl={achievement.image_url || ""} />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent opacity-90 transition-opacity group-hover:opacity-100"></div>
                   </div>
-                  <div className="p-6 text-white">
-                    <p className="mb-6 line-clamp-3">
-                      {achievement.description}
-                    </p>
-                    <div className="flex justify-end">
-                      <Link
-                        to={`/achievements/${achievement.id}`}
-                        className="bg-white rounded-full p-4 hover:bg-gray-100 transition-colors"
-                      >
-                        <ArrowUpRight size={24} className="text-black" />
-                      </Link>
+                  <div className="absolute bottom-0 left-0 right-0 z-20 p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-white line-clamp-1 mb-1">
+                        {achievement.place} - {achievement.product}
+                      </div>
+                      <span className="bg-primary/90 p-1.5 rounded-full text-white">
+                        <IconAward className="h-5 w-5" />
+                      </span>
                     </div>
+                    <div className="text-white/80 text-sm line-clamp-2 group-hover:line-clamp-none transition-all">
+                      {achievement.description}
+                    </div>
+                    <Link
+                      to={`/achievements/${achievement.id}`}
+                      className="absolute inset-0 z-30"
+                      aria-label={`View details of ${achievement.place} - ${achievement.product}`}
+                    />
                   </div>
                 </div>
-              </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
 
-        {window.location.pathname === "/" && achievements.length > 3 && (
+        {window.location.pathname === "/" && achievements.length > 4 && (
           <div className="mt-12 text-center">
             <Button
               asChild
@@ -172,13 +178,11 @@ export default function AchievementsSection({
             >
               <Link to="/achievements">
                 View All Achievements
-                <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:translate-y--1" />
+                <ArrowUpRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
           </div>
         )}
-
-        {/* Removed modal in favor of dedicated achievement detail page */}
       </div>
     </section>
   );

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
 import routes from "tempo-routes";
 import LoginForm from "./components/auth/LoginForm";
@@ -14,6 +14,27 @@ import ProjectDetailPage from "./components/pages/project-detail";
 import AchievementDetailPage from "./components/pages/achievement-detail";
 import AdminPage from "./components/pages/admin";
 import { AuthProvider, useAuth } from "@/lib/supabase/auth";
+import LoadingScreen from "@/components/LoadingScreen";
+
+// Dynamically import ClickSpark to avoid rendering issues
+const DynamicClickSpark = () => {
+  const [ClickSparkComponent, setClickSparkComponent] = useState<React.ComponentType<any> | null>(null);
+  
+  useEffect(() => {
+    const loadComponent = async () => {
+      try {
+        const module = await import("@/components/ui/ClickSpark");
+        setClickSparkComponent(() => module.default);
+      } catch (error) {
+        console.error("Failed to load ClickSpark:", error);
+      }
+    };
+    
+    loadComponent();
+  }, []);
+  
+  return ClickSparkComponent;
+};
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -83,6 +104,7 @@ function AppRoutes() {
 function App() {
   return (
     <AuthProvider>
+      <LoadingScreen />
       <Suspense fallback={<p>Loading...</p>}>
         <AppRoutes />
       </Suspense>
