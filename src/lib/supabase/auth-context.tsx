@@ -129,11 +129,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // For hardcoded admin user
     if (email === "pranjulrathour41@gmail.com" && password === "pranjul1234") {
       const adminUser = {
+        id: 'admin-user',
         email: "pranjulrathour41@gmail.com",
         user_metadata: { full_name: "Pranjul Rathour" },
-      };
+        app_metadata: {},
+        aud: 'authenticated',
+        created_at: new Date().toISOString()
+      } as User;
       localStorage.setItem("user", JSON.stringify(adminUser));
-      setUser(adminUser as User);
+      setUser(adminUser);
       setIsAdmin(true);
       return { user: adminUser };
     }

@@ -75,11 +75,7 @@ const RotatingText = forwardRef<{
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
 
-  const splitIntoCharacters = (text) => {
-    if (typeof Intl !== "undefined" && Intl.Segmenter) {
-      const segmenter = new Intl.Segmenter("en", { granularity: "grapheme" });
-      return Array.from(segmenter.segment(text), (segment) => segment.segment);
-    }
+  const splitIntoCharacters = (text: string): string[] => {
     return Array.from(text);
   };
 
@@ -243,7 +239,7 @@ const RotatingText = forwardRef<{
                       }}
                       className={cn("inline-block", elementLevelClassName)}
                     >
-                      {char}
+                      {char as string}
                     </motion.span>
                   ))}
                   {wordObj.needsSpace && (

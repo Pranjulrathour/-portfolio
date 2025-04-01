@@ -191,3 +191,28 @@ export type InsertTables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Insert"];
 export type UpdateTables<T extends keyof Database["public"]["Tables"]> =
   Database["public"]["Tables"][T]["Update"];
+
+export interface Project {
+  id?: string;
+  title: string;
+  slug: string;
+  description: string;
+  content?: string;
+  image_url?: string;
+  demo_url?: string;
+  github_url?: string;
+  technologies: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+export interface Achievement {
+  id?: string;
+  place: string;
+  product: string;
+  description: string;
+  image_url?: string;
+  secondary_image_url?: string;
+  created_at?: string;
+  updated_at?: string;
+}

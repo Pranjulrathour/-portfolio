@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { createProject } from "@/lib/supabase/api";
 import { toast } from "sonner";
 import { TechnologySelect } from "@/components/ui/technology-select";
+import { Project } from "@/lib/supabase/types";
 
 interface ProjectFormData {
   title: string;
@@ -18,15 +19,22 @@ interface ProjectFormData {
   github_url?: string;
 }
 
-export default function ProjectForm() {
+interface ProjectFormProps {
+  project?: Project;
+  onSuccess?: () => void;
+}
+
+export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const [loading, setLoading] = useState(false);
-  const [technologies, setTechnologies] = useState<string[]>([]);
+  const [technologies, setTechnologies] = useState<string[]>(project?.technologies || []);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm<ProjectFormData>();
+  } = useForm<ProjectFormData>({
+    defaultValues: project
+  });
 
   const onSubmit = async (data: ProjectFormData) => {
     try {
@@ -38,6 +46,7 @@ export default function ProjectForm() {
       toast.success("Project created successfully!");
       reset();
       setTechnologies([]);
+      onSuccess?.();
     } catch (error) {
       console.error("Error creating project:", error);
       toast.error("Failed to create project");

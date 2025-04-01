@@ -6,6 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { createAchievement } from "@/lib/supabase/api";
 import { toast } from "sonner";
+import { Achievement } from "@/lib/supabase/types";
 
 interface AchievementFormData {
   place: string;
@@ -15,14 +16,21 @@ interface AchievementFormData {
   secondary_image_url?: string;
 }
 
-export default function AchievementForm() {
+interface AchievementFormProps {
+  achievement?: Achievement;
+  onSuccess?: () => void;
+}
+
+export default function AchievementForm({ achievement, onSuccess }: AchievementFormProps) {
   const [loading, setLoading] = useState(false);
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset
-  } = useForm<AchievementFormData>();
+  } = useForm<AchievementFormData>({
+    defaultValues: achievement
+  });
 
   const onSubmit = async (data: AchievementFormData) => {
     try {
@@ -30,6 +38,7 @@ export default function AchievementForm() {
       await createAchievement(data);
       toast.success("Achievement created successfully!");
       reset();
+      onSuccess?.();
     } catch (error) {
       console.error("Error creating achievement:", error);
       toast.error("Failed to create achievement");
