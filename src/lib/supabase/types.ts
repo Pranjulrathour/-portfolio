@@ -149,6 +149,38 @@ export interface Database {
           updated_at?: string | null;
         };
       };
+      reach: {
+        Row: {
+          id: string;
+          created_at: string;
+          name: string;
+          email: string;
+          message: string;
+        };
+        Insert: {
+          id?: string;
+          created_at?: string;
+          name: string;
+          email: string;
+          message: string;
+        };
+        Update: {
+          id?: string;
+          created_at?: string;
+          name?: string;
+          email?: string;
+          message?: string;
+        };
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
     };
   };
 }

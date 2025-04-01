@@ -18,7 +18,7 @@ export default function ProjectsPage() {
               transition={{ duration: 0.5 }}
               className="container mx-auto px-4"
             >
-              <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-purple-500">
+              <h1 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
                 My Projects
               </h1>
               <p className="text-muted-foreground text-lg max-w-3xl">

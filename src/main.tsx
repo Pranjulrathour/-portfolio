@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
 import { BrowserRouter } from "react-router-dom";
-import { Toaster } from "@/components/ui/toaster";
+import { Toaster } from "sonner";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
 import { TempoDevtools } from "tempo-devtools";
@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ThemeProvider defaultTheme="dark">
       <BrowserRouter basename={basename}>
         <App />
-        <Toaster />
+        <Toaster richColors position="top-right" />
       </BrowserRouter>
     </ThemeProvider>
   </React.StrictMode>,

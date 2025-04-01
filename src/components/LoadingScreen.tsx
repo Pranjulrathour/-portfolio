@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useAuth } from "@/lib/supabase/auth";
 
 const LoadingScreen = () => {
   const [show, setShow] = useState(true);
+  const [animationComplete, setAnimationComplete] = useState(false);
+  const { loading: authLoading } = useAuth();
 
+  // Handle the animation completion
   useEffect(() => {
-    // Hide the loading screen after 3 seconds (matching animation duration)
-    const timer = setTimeout(() => {
+    const animationTimer = setTimeout(() => {
+      setAnimationComplete(true);
       setShow(false);
-    }, 3000);
+    }, 3000); // Exactly 3 seconds duration
 
-    return () => clearTimeout(timer);
+    return () => clearTimeout(animationTimer);
   }, []);
 
-  // Return null if not showing anymore
   if (!show) return null;
 
   return (

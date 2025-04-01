@@ -10,11 +10,14 @@ export default function Footer() {
     { name: "Home", href: "/" },
     { name: "Projects", href: "/projects" },
     { name: "About", href: "/about" },
+    { name: "Achievements", href: "/achievements" },
     { name: "Contact", href: "/contact" },
   ];
 
   return (
-    <footer className="bg-muted/30 border-t py-12">
+    <footer className="bg-muted/30 border-t py-12 relative">
+      <div className="h-2 w-full" />
+
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
           <div>

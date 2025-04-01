@@ -9,7 +9,34 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 
-const SplitRotatingText = forwardRef((props, ref) => {
+interface SplitRotatingTextProps {
+  staticText?: string;
+  rotatingTexts: string[];
+  transition?: {
+    type: string;
+    damping: number;
+    stiffness: number;
+  };
+  initial?: any;
+  animate?: any;
+  exit?: any;
+  animatePresenceMode?: "sync" | "wait" | "popLayout";
+  animatePresenceInitial?: boolean;
+  rotationInterval?: number;
+  staggerDuration?: number;
+  staggerFrom?: "first" | "last" | "center" | "random" | number;
+  loop?: boolean;
+  auto?: boolean;
+  splitBy?: "characters" | "words" | "lines" | string;
+  onNext?: (index: number) => void;
+  mainClassName?: string;
+  staticClassName?: string;
+  rotatingClassName?: string;
+  splitLevelClassName?: string;
+  elementLevelClassName?: string;
+}
+
+const SplitRotatingText = forwardRef<any, SplitRotatingTextProps>((props, ref) => {
   const {
     staticText,
     rotatingTexts,

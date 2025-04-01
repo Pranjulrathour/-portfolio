@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from "react";
+import { Suspense } from "react";
 import { Navigate, Route, Routes, useRoutes } from "react-router-dom";
 import routes from "tempo-routes";
 import LoginForm from "./components/auth/LoginForm";
@@ -15,32 +15,15 @@ import AchievementDetailPage from "./components/pages/achievement-detail";
 import AdminPage from "./components/pages/admin";
 import { AuthProvider, useAuth } from "@/lib/supabase/auth";
 import LoadingScreen from "@/components/LoadingScreen";
-
-// Dynamically import ClickSpark to avoid rendering issues
-const DynamicClickSpark = () => {
-  const [ClickSparkComponent, setClickSparkComponent] = useState<React.ComponentType<any> | null>(null);
-  
-  useEffect(() => {
-    const loadComponent = async () => {
-      try {
-        const module = await import("@/components/ui/ClickSpark");
-        setClickSparkComponent(() => module.default);
-      } catch (error) {
-        console.error("Failed to load ClickSpark:", error);
-      }
-    };
-    
-    loadComponent();
-  }, []);
-  
-  return ClickSparkComponent;
-};
+import ClickSpark from "./components/ui/click-spark";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>;
   }
 
   if (!user) {
@@ -54,10 +37,11 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   const { user, loading, isAdmin } = useAuth();
 
   if (loading) {
-    return <div>Loading...</div>;
+    return <div className="min-h-screen flex items-center justify-center">
+      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+    </div>;
   }
 
-  // Check if user exists and is admin
   if (!user || !isAdmin) {
     return <Navigate to="/login" />;
   }
@@ -67,47 +51,47 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route path="/login" element={<LoginForm />} />
-        <Route path="/signup" element={<SignUpForm />} />
-        <Route
-          path="/dashboard"
-          element={
-            <PrivateRoute>
-              <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <AdminRoute>
-              <AdminPage />
-            </AdminRoute>
-          }
-        />
-        <Route path="/projects" element={<ProjectsPage />} />
-        <Route path="/projects/:slug" element={<ProjectDetailPage />} />
-        <Route path="/achievements" element={<AchievementsPage />} />
-        <Route path="/achievements/:id" element={<AchievementDetailPage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/contact" element={<ContactPage />} />
-        <Route path="/success" element={<Success />} />
-      </Routes>
-      {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
-    </>
+    <Routes>
+      <Route path="/" element={<LandingPage />} />
+      <Route path="/login" element={<LoginForm />} />
+      <Route path="/signup" element={<SignUpForm />} />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateRoute>
+            <Dashboard />
+          </PrivateRoute>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <AdminRoute>
+            <AdminPage />
+          </AdminRoute>
+        }
+      />
+      <Route path="/projects" element={<ProjectsPage />} />
+      <Route path="/projects/:slug" element={<ProjectDetailPage />} />
+      <Route path="/achievements" element={<AchievementsPage />} />
+      <Route path="/achievements/:id" element={<AchievementDetailPage />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/contact" element={<ContactPage />} />
+      <Route path="/success" element={<Success />} />
+    </Routes>
   );
 }
 
 function App() {
   return (
     <AuthProvider>
-      <LoadingScreen />
-      <Suspense fallback={<p>Loading...</p>}>
-        <AppRoutes />
-      </Suspense>
+      <ClickSpark sparkColor="#3b82f6" sparkSize={6} sparkRadius={25} sparkCount={10} duration={500}>
+        <LoadingScreen />
+        <Suspense fallback={null}>
+          <AppRoutes />
+        </Suspense>
+        {import.meta.env.VITE_TEMPO === "true" && useRoutes(routes)}
+      </ClickSpark>
     </AuthProvider>
   );
 }

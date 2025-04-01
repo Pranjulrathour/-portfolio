@@ -22,20 +22,62 @@ const ThemeProviderContext = createContext<ThemeContextType>(initialState);
 
 export function ThemeProvider({
   children,
-  defaultTheme = "light",
+  defaultTheme = "dark",
   storageKey = "vite-ui-theme",
   ...props
 }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<"dark" | "light">(
-    () =>
-      (localStorage.getItem(storageKey) as "dark" | "light") || defaultTheme,
-  );
+  const [theme, setTheme] = useState<"dark" | "light">(() => {
+    // Check local storage first
+    const storedTheme = localStorage.getItem(storageKey) as "dark" | "light";
+    if (storedTheme) return storedTheme;
+
+    // Then check system preference
+    if (typeof window !== "undefined") {
+      const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches
+        ? "dark"
+        : "light";
+      return systemTheme;
+    }
+
+    return defaultTheme;
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
+
+    // Remove both classes first
     root.classList.remove("light", "dark");
+
+    // Add the current theme class
     root.classList.add(theme);
-  }, [theme]);
+
+    // Update local storage
+    localStorage.setItem(storageKey, theme);
+
+    // Update meta theme-color
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (metaThemeColor) {
+      metaThemeColor.setAttribute(
+        "content",
+        theme === "dark" ? "rgb(9, 9, 11)" : "rgb(255, 255, 255)"
+      );
+    }
+  }, [theme, storageKey]);
+
+  // Listen for system theme changes
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    
+    const handleChange = () => {
+      const storedTheme = localStorage.getItem(storageKey) as "dark" | "light";
+      if (!storedTheme) {
+        setTheme(mediaQuery.matches ? "dark" : "light");
+      }
+    };
+
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, [storageKey]);
 
   const value = {
     theme,

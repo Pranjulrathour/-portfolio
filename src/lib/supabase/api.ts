@@ -1,5 +1,7 @@
 import { supabase } from "./client";
 import { Tables, InsertTables, UpdateTables } from "./types";
+import { createClient } from '@supabase/supabase-js';
+import type { ContactFormData } from './types';
 
 export type Project = Tables<"projects"> & { technologies: string[] };
 export type Achievement = Tables<"achievements">;
@@ -344,3 +346,43 @@ export async function updateProfile(
     return false;
   }
 }
+
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables');
+}
+
+// Create a Supabase client with the anon key for public operations
+const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+
+export const submitContactForm = async (formData: ContactFormData) => {
+  try {
+    console.log('Submitting form data:', formData);
+    
+    const { data, error } = await supabaseClient
+      .from('reach')
+      .insert([
+        {
+          name: formData.name,
+          email: formData.email,
+          message: formData.message,
+          created_at: new Date().toISOString()
+        }
+      ])
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
+    console.log('Form submission successful:', data);
+    return { data, error: null };
+  } catch (error) {
+    console.error('Error submitting contact form:', error);
+    throw error;
+  }
+};

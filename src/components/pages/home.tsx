@@ -89,7 +89,7 @@ export default function LandingPage() {
         <div className="flex min-h-[calc(100vh-4rem)] flex-col items-center justify-center">
           <div className="relative">
             {/* Gradient orbs */}
-            <div className="absolute -top-24 -z-10 h-[300px] w-[300px] rounded-full bg-purple-500/20 blur-[100px]" />
+            <div className="absolute -top-24 -z-10 h-[300px] w-[300px] rounded-full bg-primary/20 blur-[100px]" />
             <div className="absolute -right-24 -top-48 -z-10 h-[300px] w-[300px] rounded-full bg-blue-500/20 blur-[100px]" />
 
             <div className="flex flex-col items-center justify-center space-y-8 text-center">

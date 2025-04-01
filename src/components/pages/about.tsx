@@ -4,6 +4,7 @@ import Footer from "../portfolio/Footer";
 import { motion } from "framer-motion";
 import { AuthProvider } from "@/lib/supabase/auth";
 import BackgroundWrapper from "@/components/ui/background-wrapper";
+import { ScrollProgress } from "@/components/ui/scroll-progress";
 
 export default function AboutPage() {
   return (
@@ -11,6 +12,7 @@ export default function AboutPage() {
       <BackgroundWrapper>
         <div className="min-h-screen bg-background bg-opacity-70">
           <Navbar />
+          <ScrollProgress className="top-[60px]" />
           <div className="pt-24 pb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}

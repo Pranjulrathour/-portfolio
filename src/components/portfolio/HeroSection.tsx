@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
 import { ArrowDownCircle, Code, Sparkles, Zap } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import React from "react";
 import GradientBackground from "@/components/ui/gradient-background";
 import SplitRotatingText from "@/components/ui/split-rotating-text";
@@ -12,6 +10,12 @@ export default function HeroSection() {
     if (projectsSection) {
       projectsSection.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  const handleContactClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    const whatsappUrl = "https://wa.me/918467977141?text=Hi%20Pranjul%2C%20I%27m%20interested%20in%20working%20with%20you!";
+    window.open(whatsappUrl, '_blank');
   };
 
   return (
@@ -76,22 +80,25 @@ export default function HeroSection() {
               Growth Through Strategic Campaigns.
             </p>
 
-            <div className="flex flex-wrap gap-4">
-              <Button
-                size="lg"
-                onClick={scrollToProjects}
-                className="rounded-md px-8 bg-blue-600 hover:bg-blue-700"
+            {/* Buttons Container */}
+            <div className="flex gap-4 items-center">
+              {/* Contact Now Button */}
+              <button
+                onClick={handleContactClick}
+                className="inline-flex items-center justify-center px-8 py-3 text-lg font-semibold text-white bg-blue-600 rounded-lg hover:bg-blue-700 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl cursor-pointer"
               >
-                Hire Me
-              </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="rounded-md px-8 border-2"
-                asChild
+                Contact Now
+              </button>
+
+              {/* LinkedIn Button */}
+              <a
+                href="https://www.linkedin.com/in/pranjul-rathour/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-6 py-2 text-base font-medium border-2 border-black dark:border-white hover:bg-gray-100 dark:hover:bg-gray-800 transform hover:scale-105 transition-all duration-200 cursor-pointer"
               >
-                <Link to="/contact">Whatsapp</Link>
-              </Button>
+                LinkedIn
+              </a>
             </div>
           </motion.div>
 
