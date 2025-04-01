@@ -15,11 +15,15 @@
     "jsx": "react-jsx",
 
     "strict": false,
+    "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
   },
-  "include": ["src", "supabase/auth.tsx", "supabase/supabase.ts"],
-  "exclude": ["src/tempobook"],
+  "include": ["src/**/*", "supabase/**/*"],
+  "exclude": ["src/tempobook", "node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

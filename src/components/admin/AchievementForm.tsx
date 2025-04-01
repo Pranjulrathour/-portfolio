@@ -46,26 +46,24 @@ interface AchievementFormProps {
   onSuccess?: () => void;
 }
 
+interface AchievementFormData {
+  place: string;
+  product: string;
+  description: string;
+  image_url?: string;
+  secondary_image_url?: string;
+}
+
 export default function AchievementForm({
   achievement,
   onSuccess,
 }: AchievementFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const form = useForm<AchievementFormValues>({
-    resolver: zodResolver(achievementSchema),
-    defaultValues: {
-      place: "",
-      product: "",
-      description: "",
-      image_url: "",
-      secondary_image_url: "",
-    },
-  });
+  const { register, handleSubmit, formState: { errors }, reset } = useForm<AchievementFormData>();
 
   useEffect(() => {
     if (achievement) {
-      form.reset({
+      reset({
         place: achievement.place,
         product: achievement.product,
         description: achievement.description,
@@ -73,9 +71,9 @@ export default function AchievementForm({
         secondary_image_url: achievement.secondary_image_url || "",
       });
     }
-  }, [achievement, form]);
+  }, [achievement, reset]);
 
-  const onSubmit = async (data: AchievementFormValues) => {
+  const onSubmit = async (data: AchievementFormData) => {
     setIsSubmitting(true);
     try {
       if (achievement) {
@@ -104,7 +102,7 @@ export default function AchievementForm({
             title: "Achievement created",
             description: "Your achievement has been created successfully.",
           });
-          form.reset();
+          reset();
           onSuccess?.();
         } else {
           toast({
@@ -127,8 +125,8 @@ export default function AchievementForm({
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <Form {...{ register, handleSubmit, errors }}>
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="place"

@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/form";
 import { createProject, updateProject, Project } from "@/lib/supabase/api";
 import { toast } from "@/components/ui/use-toast";
+import { Label } from "@/components/ui/label";
+import { TechnologySelect } from "@/components/ui/technology-select";
 
 const projectSchema = z.object({
   title: z.string().min(3, { message: "Title must be at least 3 characters" }),
@@ -53,11 +55,22 @@ interface ProjectFormProps {
   onSuccess?: () => void;
 }
 
+interface ProjectFormData {
+  title: string;
+  slug: string;
+  description: string;
+  content?: string;
+  image_url?: string;
+  demo_url?: string;
+  github_url?: string;
+  technologies: string[];
+}
+
 export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [technologies, setTechnologies] = useState<string[]>([]);
 
-  const form = useForm<ProjectFormValues>({
-    resolver: zodResolver(projectSchema),
+  const form = useForm<ProjectFormData>({
     defaultValues: {
       title: "",
       slug: "",
@@ -66,7 +79,7 @@ export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
       image_url: "",
       demo_url: "",
       github_url: "",
-      technologies: "",
+      technologies: [],
     },
   });
 
@@ -85,7 +98,7 @@ export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
     }
   }, [project, form]);
 
-  const onSubmit = async (data: ProjectFormValues) => {
+  const onSubmit = async (data: ProjectFormData) => {
     setIsSubmitting(true);
     try {
       const technologies = data.technologies
@@ -266,9 +279,9 @@ export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
             <FormItem>
               <FormLabel>Technologies</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="React, Node.js, MongoDB (comma separated)"
-                  {...field}
+                <TechnologySelect
+                  value={technologies}
+                  onChange={setTechnologies}
                 />
               </FormControl>
               <FormMessage />
