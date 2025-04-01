@@ -1,10 +1,16 @@
 import { supabase } from "./client";
 import { Tables, InsertTables, UpdateTables } from "./types";
 import { createClient } from '@supabase/supabase-js';
-import type { ContactFormData } from './types';
+import type { Database } from '@/types/supabase';
 
 export type Project = Tables<"projects"> & { technologies: string[] };
 export type Achievement = Tables<"achievements">;
+
+export interface ContactFormData {
+  name: string;
+  email: string;
+  message: string;
+}
 
 // Projects API
 export async function getProjects(): Promise<Project[]> {

@@ -1,50 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  createAchievement,
-  updateAchievement,
-  Achievement,
-} from "@/lib/supabase/api";
-import { toast } from "@/components/ui/use-toast";
-
-const achievementSchema = z.object({
-  place: z.string().min(3, { message: "Place must be at least 3 characters" }),
-  product: z
-    .string()
-    .min(3, { message: "Product must be at least 3 characters" }),
-  description: z
-    .string()
-    .min(10, { message: "Description must be at least 10 characters" }),
-  image_url: z
-    .string()
-    .url({ message: "Please enter a valid URL" })
-    .min(1, { message: "Primary image URL is required" }),
-  secondary_image_url: z
-    .string()
-    .url({ message: "Please enter a valid URL" })
-    .optional()
-    .or(z.literal("")),
-});
-
-type AchievementFormValues = z.infer<typeof achievementSchema>;
-
-interface AchievementFormProps {
-  achievement?: Achievement;
-  onSuccess?: () => void;
-}
+import { Label } from "@/components/ui/label";
+import { createAchievement } from "@/lib/supabase/api";
+import { toast } from "sonner";
 
 interface AchievementFormData {
   place: string;
@@ -54,170 +15,88 @@ interface AchievementFormData {
   secondary_image_url?: string;
 }
 
-export default function AchievementForm({
-  achievement,
-  onSuccess,
-}: AchievementFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const { register, handleSubmit, formState: { errors }, reset } = useForm<AchievementFormData>();
-
-  useEffect(() => {
-    if (achievement) {
-      reset({
-        place: achievement.place,
-        product: achievement.product,
-        description: achievement.description,
-        image_url: achievement.image_url || "",
-        secondary_image_url: achievement.secondary_image_url || "",
-      });
-    }
-  }, [achievement, reset]);
+export default function AchievementForm() {
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<AchievementFormData>();
 
   const onSubmit = async (data: AchievementFormData) => {
-    setIsSubmitting(true);
     try {
-      if (achievement) {
-        // Update existing achievement
-        const success = await updateAchievement(achievement.id, data);
-
-        if (success) {
-          toast({
-            title: "Achievement updated",
-            description: "Your achievement has been updated successfully.",
-          });
-          onSuccess?.();
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to update achievement. Please try again.",
-            variant: "destructive",
-          });
-        }
-      } else {
-        // Create new achievement
-        const newAchievement = await createAchievement(data);
-
-        if (newAchievement) {
-          toast({
-            title: "Achievement created",
-            description: "Your achievement has been created successfully.",
-          });
-          reset();
-          onSuccess?.();
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to create achievement. Please try again.",
-            variant: "destructive",
-          });
-        }
-      }
+      setLoading(true);
+      await createAchievement(data);
+      toast.success("Achievement created successfully!");
+      reset();
     } catch (error) {
-      console.error("Error submitting achievement:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
-      });
+      console.error("Error creating achievement:", error);
+      toast.error("Failed to create achievement");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Form {...{ register, handleSubmit, errors }}>
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="place"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Place</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Achievement location or context"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="place">Place</Label>
+        <Input
+          id="place"
+          {...register("place", { required: "Place is required" })}
+          placeholder="Enter place"
         />
+        {errors.place && (
+          <p className="text-red-500 text-sm">{errors.place.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="product"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Product</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Product, service, or project name"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="product">Product</Label>
+        <Input
+          id="product"
+          {...register("product", { required: "Product is required" })}
+          placeholder="Enter product"
         />
+        {errors.product && (
+          <p className="text-red-500 text-sm">{errors.product.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Detailed description of the achievement"
-                  {...field}
-                  rows={5}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          {...register("description", { required: "Description is required" })}
+          placeholder="Enter description"
         />
+        {errors.description && (
+          <p className="text-red-500 text-sm">{errors.description.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="image_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Primary Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="image_url">Image URL</Label>
+        <Input
+          id="image_url"
+          {...register("image_url")}
+          placeholder="Enter image URL"
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="secondary_image_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Secondary Image URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://example.com/image2.jpg"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="secondary_image_url">Secondary Image URL</Label>
+        <Input
+          id="secondary_image_url"
+          {...register("secondary_image_url")}
+          placeholder="Enter secondary image URL"
         />
+      </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting
-            ? "Saving..."
-            : achievement
-              ? "Update Achievement"
-              : "Create Achievement"}
-        </Button>
-      </form>
-    </Form>
+      <Button type="submit" disabled={loading}>
+        {loading ? "Creating..." : "Create Achievement"}
+      </Button>
+    </form>
   );
 }

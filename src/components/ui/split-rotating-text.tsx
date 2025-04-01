@@ -36,6 +36,10 @@ interface SplitRotatingTextProps {
   elementLevelClassName?: string;
 }
 
+const splitText = (text: string): string[] => {
+  return text.split('');
+};
+
 const SplitRotatingText = forwardRef<any, SplitRotatingTextProps>((props, ref) => {
   const {
     staticText,
@@ -62,6 +66,7 @@ const SplitRotatingText = forwardRef<any, SplitRotatingTextProps>((props, ref) =
   } = props;
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
+  const characters = splitText(rotatingTexts[currentTextIndex]);
 
   const splitIntoCharacters = (text) => {
     if (typeof Intl !== "undefined" && Intl.Segmenter) {

@@ -1,59 +1,12 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { createProject, updateProject, Project } from "@/lib/supabase/api";
-import { toast } from "@/components/ui/use-toast";
 import { Label } from "@/components/ui/label";
+import { createProject } from "@/lib/supabase/api";
+import { toast } from "sonner";
 import { TechnologySelect } from "@/components/ui/technology-select";
-
-const projectSchema = z.object({
-  title: z.string().min(3, { message: "Title must be at least 3 characters" }),
-  slug: z
-    .string()
-    .min(3, { message: "Slug must be at least 3 characters" })
-    .regex(/^[a-z0-9-]+$/, {
-      message: "Slug can only contain lowercase letters, numbers, and hyphens",
-    }),
-  description: z
-    .string()
-    .min(10, { message: "Description must be at least 10 characters" }),
-  content: z.string().optional(),
-  image_url: z
-    .string()
-    .url({ message: "Please enter a valid URL" })
-    .optional()
-    .or(z.literal("")),
-  demo_url: z
-    .string()
-    .url({ message: "Please enter a valid URL" })
-    .optional()
-    .or(z.literal("")),
-  github_url: z
-    .string()
-    .url({ message: "Please enter a valid URL" })
-    .optional()
-    .or(z.literal("")),
-  technologies: z.string(),
-});
-
-type ProjectFormValues = z.infer<typeof projectSchema>;
-
-interface ProjectFormProps {
-  project?: Project;
-  onSuccess?: () => void;
-}
 
 interface ProjectFormData {
   title: string;
@@ -63,240 +16,121 @@ interface ProjectFormData {
   image_url?: string;
   demo_url?: string;
   github_url?: string;
-  technologies: string[];
 }
 
-export default function ProjectForm({ project, onSuccess }: ProjectFormProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+export default function ProjectForm() {
+  const [loading, setLoading] = useState(false);
   const [technologies, setTechnologies] = useState<string[]>([]);
-
-  const form = useForm<ProjectFormData>({
-    defaultValues: {
-      title: "",
-      slug: "",
-      description: "",
-      content: "",
-      image_url: "",
-      demo_url: "",
-      github_url: "",
-      technologies: [],
-    },
-  });
-
-  useEffect(() => {
-    if (project) {
-      form.reset({
-        title: project.title,
-        slug: project.slug,
-        description: project.description,
-        content: project.content || "",
-        image_url: project.image_url || "",
-        demo_url: project.demo_url || "",
-        github_url: project.github_url || "",
-        technologies: project.technologies.join(", "),
-      });
-    }
-  }, [project, form]);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset
+  } = useForm<ProjectFormData>();
 
   const onSubmit = async (data: ProjectFormData) => {
-    setIsSubmitting(true);
     try {
-      const technologies = data.technologies
-        .split(",")
-        .map((tech) => tech.trim())
-        .filter((tech) => tech.length > 0);
-
-      if (project) {
-        // Update existing project
-        const success = await updateProject(project.id, {
-          ...data,
-          technologies,
-        });
-
-        if (success) {
-          toast({
-            title: "Project updated",
-            description: "Your project has been updated successfully.",
-          });
-          onSuccess?.();
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to update project. Please try again.",
-            variant: "destructive",
-          });
-        }
-      } else {
-        // Create new project
-        const newProject = await createProject({
-          ...data,
-          technologies,
-        });
-
-        if (newProject) {
-          toast({
-            title: "Project created",
-            description: "Your project has been created successfully.",
-          });
-          form.reset();
-          onSuccess?.();
-        } else {
-          toast({
-            title: "Error",
-            description: "Failed to create project. Please try again.",
-            variant: "destructive",
-          });
-        }
-      }
-    } catch (error) {
-      console.error("Error submitting project:", error);
-      toast({
-        title: "Error",
-        description: "An unexpected error occurred. Please try again.",
-        variant: "destructive",
+      setLoading(true);
+      await createProject({
+        ...data,
+        technologies
       });
+      toast.success("Project created successfully!");
+      reset();
+      setTechnologies([]);
+    } catch (error) {
+      console.error("Error creating project:", error);
+      toast.error("Failed to create project");
     } finally {
-      setIsSubmitting(false);
+      setLoading(false);
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Project title" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <div>
+        <Label htmlFor="title">Title</Label>
+        <Input
+          id="title"
+          {...register("title", { required: "Title is required" })}
+          placeholder="Enter title"
         />
+        {errors.title && (
+          <p className="text-red-500 text-sm">{errors.title.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="slug"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Slug</FormLabel>
-              <FormControl>
-                <Input placeholder="project-slug" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="slug">Slug</Label>
+        <Input
+          id="slug"
+          {...register("slug", { required: "Slug is required" })}
+          placeholder="Enter slug"
         />
+        {errors.slug && (
+          <p className="text-red-500 text-sm">{errors.slug.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Brief description of the project"
-                  {...field}
-                  rows={3}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="description">Description</Label>
+        <Textarea
+          id="description"
+          {...register("description", { required: "Description is required" })}
+          placeholder="Enter description"
         />
+        {errors.description && (
+          <p className="text-red-500 text-sm">{errors.description.message}</p>
+        )}
+      </div>
 
-        <FormField
-          control={form.control}
-          name="content"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Content</FormLabel>
-              <FormControl>
-                <Textarea
-                  placeholder="Detailed project content (markdown supported)"
-                  {...field}
-                  rows={8}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="content">Content</Label>
+        <Textarea
+          id="content"
+          {...register("content")}
+          placeholder="Enter content"
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="image_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Image URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com/image.jpg" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="image_url">Image URL</Label>
+        <Input
+          id="image_url"
+          {...register("image_url")}
+          placeholder="Enter image URL"
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="demo_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Demo URL</FormLabel>
-              <FormControl>
-                <Input placeholder="https://example.com" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="demo_url">Demo URL</Label>
+        <Input
+          id="demo_url"
+          {...register("demo_url")}
+          placeholder="Enter demo URL"
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="github_url"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>GitHub URL</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="https://github.com/username/repo"
-                  {...field}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label htmlFor="github_url">GitHub URL</Label>
+        <Input
+          id="github_url"
+          {...register("github_url")}
+          placeholder="Enter GitHub URL"
         />
+      </div>
 
-        <FormField
-          control={form.control}
-          name="technologies"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Technologies</FormLabel>
-              <FormControl>
-                <TechnologySelect
-                  value={technologies}
-                  onChange={setTechnologies}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
+      <div>
+        <Label>Technologies</Label>
+        <TechnologySelect
+          value={technologies}
+          onChange={setTechnologies}
         />
+      </div>
 
-        <Button type="submit" disabled={isSubmitting} className="w-full">
-          {isSubmitting
-            ? "Saving..."
-            : project
-              ? "Update Project"
-              : "Create Project"}
-        </Button>
-      </form>
-    </Form>
+      <Button type="submit" disabled={loading}>
+        {loading ? "Creating..." : "Create Project"}
+      </Button>
+    </form>
   );
 }
